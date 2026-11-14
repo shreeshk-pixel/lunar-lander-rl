@@ -17,10 +17,20 @@ Landing rates (both are reported)
         reward of exactly +100. LunarLander only gives that bonus when the
         lander comes to rest — the Trainer's landing definition.
 
-Crash and timeout
-    crash rate: terminated with a final-step reward of -100 (crash or
-    out-of-bounds). timeout rate: truncated at the 1000-step time limit
-    (the signature of a hovering policy).
+Outcome categories (mutually exclusive)
+    An episode is counted in exactly one of: landed-at-rest, crashed, or
+    timed out (or "other" in the rare case none of those apply).
+
+    crashed
+        Terminated with a final-step reward of -100 (crash or out of
+        bounds), including a crash that happens on the 1000th step.
+    timed out
+        Truncated at the 1000-step time limit *without* an at-rest +100
+        or crash -100 on that step. This is the signature of a hovering
+        policy. A lander that comes to rest exactly at step 1000 (both
+        `terminated` and `truncated` can be True) is counted as landed,
+        not as a timeout. The Trainer/Hacker `src/evaluate.py` can
+        double-count that case in `landing_rate` and `truncated_rate`.
 
 Usage:
     .venv/bin/python src/analysis/evaluate.py \
@@ -106,17 +116,33 @@ def run_episode(model, env, seed: int) -> dict:
         done = bool(terminated or truncated)
     terminated = bool(terminated)
     truncated = bool(truncated)
+    outcome = classify_outcome(terminated, truncated, final_reward, length)
     return {
         "return": total,
         "length": length,
         "terminated": terminated,
         "truncated": truncated,
         "final_reward": final_reward,
+        "outcome": outcome,
         "landed": total >= LANDING_RETURN_THRESHOLD,
-        "landed_at_rest": terminated and final_reward == AT_REST_BONUS,
-        "crashed": terminated and final_reward == CRASH_PENALTY,
-        "timed_out": truncated,
+        "landed_at_rest": outcome == "landed_at_rest",
+        "crashed": outcome == "crashed",
+        "timed_out": outcome == "timeout",
+        "other": outcome == "other",
     }
+
+
+def classify_outcome(terminated: bool, truncated: bool, final_reward: float, length: int) -> str:
+    """Assign exactly one outcome. Rest at the 1000-step limit counts as landed."""
+    # The +100 at-rest bonus is decisive, even when TimeLimit also sets
+    # truncated=True on the same step.
+    if final_reward == AT_REST_BONUS:
+        return "landed_at_rest"
+    if terminated and final_reward == CRASH_PENALTY:
+        return "crashed"
+    if truncated:
+        return "timeout"
+    return "other"
 
 
 def evaluate_model(model_path: Path, n_episodes: int, seeds: list[int], device: str) -> list[dict]:
@@ -152,6 +178,7 @@ def aggregate(label: str, model_paths: list[Path], episodes: list[dict], scope: 
     n_landed_at_rest = sum(1 for e in episodes if e["landed_at_rest"])
     n_crashed = sum(1 for e in episodes if e["crashed"])
     n_timeout = sum(1 for e in episodes if e["timed_out"])
+    n_other = sum(1 for e in episodes if e["other"])
     n_terminated = sum(1 for e in episodes if e["terminated"])
     n_truncated = sum(1 for e in episodes if e["truncated"])
     return {
@@ -166,6 +193,7 @@ def aggregate(label: str, model_paths: list[Path], episodes: list[dict], scope: 
         "landing_rate_at_rest": n_landed_at_rest / n if n else float("nan"),
         "crash_rate": n_crashed / n if n else float("nan"),
         "timeout_rate": n_timeout / n if n else float("nan"),
+        "other_rate": n_other / n if n else float("nan"),
         "terminated_rate": n_terminated / n if n else float("nan"),
         "truncated_rate": n_truncated / n if n else float("nan"),
         "mean_episode_length": statistics.fmean(lengths) if n else float("nan"),
@@ -173,6 +201,7 @@ def aggregate(label: str, model_paths: list[Path], episodes: list[dict], scope: 
         "n_landed_at_rest": n_landed_at_rest,
         "n_crashed": n_crashed,
         "n_timeout": n_timeout,
+        "n_other": n_other,
         "n_terminated": n_terminated,
         "n_truncated": n_truncated,
     }
@@ -189,6 +218,7 @@ CSV_COLUMNS = [
     "landing_rate_at_rest",
     "crash_rate",
     "timeout_rate",
+    "other_rate",
     "terminated_rate",
     "truncated_rate",
     "mean_episode_length",
@@ -196,6 +226,7 @@ CSV_COLUMNS = [
     "n_landed_at_rest",
     "n_crashed",
     "n_timeout",
+    "n_other",
     "n_terminated",
     "n_truncated",
     "models",
@@ -220,6 +251,7 @@ def write_csv(path: Path, rows: list[dict]) -> None:
                 "landing_rate_at_rest",
                 "crash_rate",
                 "timeout_rate",
+                "other_rate",
                 "terminated_rate",
                 "truncated_rate",
             ):
@@ -247,12 +279,21 @@ def write_markdown(path: Path, rows: list[dict], n_episodes: int, seeds: list[in
         f"terminated with a final-step reward of +{AT_REST_BONUS} (the lander "
         "came to rest). This is the Trainer's landing definition.",
         "",
-        "**Crash rate** is the fraction of episodes that terminated with a "
-        f"final-step reward of {CRASH_PENALTY} (crash or out of bounds).",
+        "**Crash rate**, **timeout rate** and **landing rate (at-rest +100)** "
+        "are mutually exclusive and should sum to 100% (plus **other** if "
+        "an episode fits none of those). A lander that comes to rest on "
+        f"step {MAX_EPISODE_STEPS} (Gymnasium may set both `terminated` and "
+        "`truncated`) is counted as landed, not as a timeout. Raw "
+        "`truncated=True` is still recorded in the CSV as `truncated_rate` "
+        "and can be higher than the exclusive timeout rate.",
+        "",
+        "**Crash rate** is the fraction of episodes that ended with a "
+        f"final-step reward of {CRASH_PENALTY} (crash or out of bounds), "
+        "including a crash on the time-limit step.",
         "",
         f"**Timeout rate** is the fraction of episodes cut off at the "
-        f"{MAX_EPISODE_STEPS}-step time limit (`truncated=True`). A high "
-        "timeout rate is the signature of a hovering policy.",
+        f"{MAX_EPISODE_STEPS}-step time limit without an at-rest or crash "
+        "outcome. A high timeout rate is the signature of a hovering policy.",
         "",
         "| Label | Scope | Models | Episodes | Mean score | Std | "
         "Land (≥200) | Land (+100) | Crash | Timeout | Mean length |",
@@ -298,6 +339,7 @@ def format_summary_line(row: dict) -> str:
         f"land+100={row['landing_rate_at_rest']*100:.1f}% "
         f"crash={row['crash_rate']*100:.1f}% "
         f"timeout={row['timeout_rate']*100:.1f}% "
+        f"other={row['other_rate']*100:.1f}% "
         f"len={row['mean_episode_length']:.1f}"
     )
 
