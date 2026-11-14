@@ -1,0 +1,35 @@
+# Pinned from the working .venv (Python 3.13.5) via results/pinned_versions.txt.
+#
+# CPU-only lighter install (recommended here: a GPU rarely helps small MLP PPO,
+# and this avoids a large CUDA download). Install torch from the CPU index
+# first, then the rest of this file:
+#   pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements.txt
+# If the CPU wheel is already installed, add
+#   --extra-index-url https://download.pytorch.org/whl/cpu
+# so pip does not replace it with a CUDA build when it sees the pin below.
+#
+# On Linux, a plain `pip install torch==2.15.0` from PyPI already pulls CUDA
+# wheels, which is fine for an NVIDIA GPU (e.g. RTX 4050) but is a much
+# larger download.
+#
+# swig is pinned because Box2D / gymnasium[box2d] may need it to compile the
+# Box2D bindings when a prebuilt wheel is not available. Install swig first
+# if a Box2D build error mentions a missing swig binary:
+#   pip install swig==4.5.1
+#
+# Notebook extras (Colab / local nbconvert only; not required for training):
+#   pip install nbconvert ipykernel
+
+gymnasium[box2d]==1.4.0
+Box2D==2.3.10
+swig==4.5.1
+stable-baselines3==2.9.2
+torch==2.15.0
+matplotlib==3.11.2
+pandas==3.1.1
+imageio==2.38.1
+imageio-ffmpeg==0.8.1
+moviepy==2.2.1
+numpy==2.5.4
+pillow==11.3.0
