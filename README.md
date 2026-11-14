@@ -40,7 +40,7 @@ Plain-env return (rolling mean, window 100 episodes) with a band across the thre
 
 ## The hack
 
-The shaping rule is exactly the one in the project guide: **+1 per frame** when the lander is upright and slow. Thresholds, from `src/wrappers.py`:
+The shaping rule is deliberately naive: **+1 per frame** when the lander is upright and slow. Thresholds, from `src/wrappers.py`:
 
 - `|obs[4]| < 0.2` rad (about 11.5°)
 - `sqrt(vx² + vy²) < 0.3` (observation-scaled speed)
@@ -160,7 +160,7 @@ Wall-clock time per 1,007,616-step run, averaged over the three seeds, from `res
 | Hack | 165.0 s (2.75 min) | 165.8, 163.3, 165.9 s |
 | Fix | 166.4 s (2.77 min) | 166.4, 166.1, 166.6 s |
 
-These are **not a speed comparison**. Training happened in three parallel batches on an 8-core CPU box: the four Trainer seed-0/1 runs together, then the six Reward Hacker runs together, then the two Trainer seed-2 runs together. Each batch was sharing those cores.
+These are **not a speed comparison**. Training happened in three parallel batches on an 8-core CPU box: the four baseline and time-penalty seed-0/1 runs together, then the six hack and fix runs together, then the two baseline and time-penalty seed-2 runs together. Each batch was sharing those cores.
 
 ## Repo layout
 
@@ -193,4 +193,4 @@ models/                  trained zips (gitignored; retrain or download separatel
 
 MIT © 2026 Shreesh Kallapur. See `LICENSE`.
 
-This project follows Hari's Lunar Lander reward-shaping guide ([@harixganesh](https://github.com/harixganesh)). The environment is [Gymnasium](https://gymnasium.farama.org/)'s `LunarLander-v3`; training uses [Stable-Baselines3](https://stable-baselines3.readthedocs.io/).
+The environment is [Gymnasium](https://gymnasium.farama.org/)'s `LunarLander-v3`; training uses [Stable-Baselines3](https://stable-baselines3.readthedocs.io/).
