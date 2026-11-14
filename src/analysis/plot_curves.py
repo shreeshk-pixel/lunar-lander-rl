@@ -414,15 +414,9 @@ def main(argv=None) -> int:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    # Distinct, colourblind-friendlier cycle.
-    colors = plt.rcParams["axes.prop_cycle"].by_key().get("color") or [
-        "#1f77b4",
-        "#ff7f0e",
-        "#2ca02c",
-        "#d62728",
-        "#9467bd",
-    ]
+    fig, ax = plt.subplots(figsize=(10.5, 5.8))
+    # Distinct, colourblind-friendlier cycle (Okabe–Ito-ish).
+    colors = ["#0072B2", "#E69F00", "#009E73", "#D55E00", "#CC79A7", "#56B4E9"]
 
     for i, (label, curves) in enumerate(series.items()):
         max_step = max(float(c["timesteps"].max()) for c in curves if len(c))
@@ -434,37 +428,52 @@ def main(argv=None) -> int:
         stacked = np.vstack(
             [interpolate_to_grid(c, grid, args.window) for c in curves]
         )
-        with np.errstate(invalid="ignore"):
-            mean = np.nanmean(stacked, axis=0)
-            counts = np.sum(~np.isnan(stacked), axis=0)
-            std = np.zeros_like(mean)
-            # Sample std is only defined where at least two seeds have data.
-            mask = counts >= 2
-            if np.any(mask):
-                std[mask] = np.nanstd(stacked[:, mask], axis=0, ddof=1)
+        counts = np.sum(~np.isnan(stacked), axis=0)
+        mean = np.full(stacked.shape[1], np.nan)
+        std = np.zeros(stacked.shape[1], dtype=float)
+        has_data = counts >= 1
+        if np.any(has_data):
+            with np.errstate(invalid="ignore", divide="ignore"):
+                mean[has_data] = np.nanmean(stacked[:, has_data], axis=0)
+        # Sample std, and the plotted mean, use only points with >=2 seeds
+        # when multiple seeds exist. That avoids a single-seed tail spike
+        # at the end of training (one run finishing a few steps later).
+        n_seeds = stacked.shape[0]
+        min_count = 2 if n_seeds >= 2 else 1
+        usable = counts >= min_count
+        if np.any(usable):
+            with np.errstate(invalid="ignore"):
+                std[usable] = np.nanstd(stacked[:, usable], axis=0, ddof=1)
+            mean = np.where(usable, mean, np.nan)
         color = colors[i % len(colors)]
         legend_label = label
         if label in annotations:
             legend_label = f"{label} — {annotations[label]}"
-        n_seeds = stacked.shape[0]
         legend_label = f"{legend_label} (n={n_seeds})"
-        ax.plot(grid, mean, color=color, lw=2, label=legend_label)
-        ax.fill_between(grid, mean - std, mean + std, color=color, alpha=0.22, linewidth=0)
+        ax.plot(grid, mean, color=color, lw=2.2, label=legend_label, zorder=3)
+        ax.fill_between(
+            grid, mean - std, mean + std, color=color, alpha=0.22, linewidth=0, zorder=2
+        )
 
     if args.solved_threshold is not None and args.solved_threshold >= 0:
         ax.axhline(
             args.solved_threshold,
             color="0.35",
             ls="--",
-            lw=1,
-            label=f"solved threshold ({args.solved_threshold:g})",
+            lw=1.2,
+            label=f"solved = {args.solved_threshold:g}",
+            zorder=1,
         )
 
-    ax.set_xlabel("Timesteps")
-    ax.set_ylabel(f"Episode reward (rolling mean, window={args.window})")
+    ax.set_xlabel("Environment steps")
+    ax.set_ylabel(f"Plain-env return (rolling mean, window={args.window})")
     ax.set_title(args.title)
+    ax.set_xlim(left=0)
+    ax.xaxis.set_major_formatter(
+        plt.FuncFormatter(lambda x, _pos: f"{x/1e6:.1f}M" if x else "0")
+    )
     ax.grid(alpha=0.3)
-    ax.legend(loc="best", frameon=True, fontsize=8)
+    ax.legend(loc="lower right", frameon=True, fontsize=8, framealpha=0.92)
     fig.tight_layout()
 
     out = args.output
