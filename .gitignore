@@ -1,0 +1,25 @@
+# Virtual environment
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Trained weights (large, seed-specific)
+models/
+
+# TensorBoard event files (typically written under logs/)
+events.out.tfevents.*
+**/events.out.tfevents.*
+
+# macOS
+.DS_Store
+
+# Temporary video directories (Gymnasium RecordVideo, local render dumps)
+videos/
+**/videos/
+*-videos/
+recordings/
+**/recordings/
+tmp_videos/
+*-episode-*.mp4
