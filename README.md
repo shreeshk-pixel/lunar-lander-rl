@@ -32,7 +32,7 @@ Independent evaluation: plain env, deterministic actions, **20 episodes × 3 eva
 | Hack (`hack`) | 0, 1, 2 | 180 | −15.98 | 128.86 | 21.7% | 1.1% | 77.2% | 983.9 | 165.0 s |
 | Fix (`fix`) | 0, 1, 2 | 180 | 262.99 | 27.24 | 98.3% | 0.0% | 1.7% | 311.4 | 166.4 s |
 
-Per-seed numbers, eval protocol details, and a comparison with the Trainer's and Reward Hacker's own 30-episode evals (seeds 1000–1029) are in `results/results_table.md` and `results/analysis_eval_all.md`.
+Per-seed numbers, eval protocol details, and a comparison with the earlier 30-episode evals (seeds 1000–1029) are in `results/results_table.md` and `results/analysis_eval_all.md`.
 
 ![Learning curves](assets/learning_curves.png)
 
