@@ -1,0 +1,25 @@
+# Documentation of a published training variant.
+# src/train.py does not accept --config; these values were passed on the CLI
+# (or taken from script/wrapper defaults). Re-run with the same flags, or with
+# scripts/run_*.sh and the env overrides listed in the README.
+
+name: time_penalty
+wrapper: time_penalty
+wrapper_kwargs:
+  penalty: 0.05             # subtracted from the env reward every step
+policy: MlpPolicy
+algo: PPO
+env_id: LunarLander-v3
+timesteps: 1000000          # requested; 8 envs × n_steps=1024 → 1,007,616 actual
+n_envs: 8
+device: cpu
+torch_threads: 1
+seeds: [0, 1, 2]            # published training seeds
+ppo:
+  n_steps: 1024
+  batch_size: 64
+  n_epochs: 4
+  gamma: 0.999
+  gae_lambda: 0.98
+  ent_coef: 0.01
+  learning_rate: 0.0003
