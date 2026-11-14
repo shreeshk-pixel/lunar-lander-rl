@@ -5,32 +5,35 @@ Always uses the unmodified Gymnasium environment (no reward wrappers), so
 shaping bonuses cannot inflate scores. Actions are deterministic by default.
 
 Multiple model paths or globs can share a label; every training seed under
-that label is evaluated and then aggregated together.
+that label is evaluated individually and then aggregated together.
 
-Landing rate
-    The fraction of evaluated episodes whose plain-env episodic return is
-    greater than or equal to 200 (Gymnasium's official "solved" threshold
-    for Lunar Lander). This is a return-based criterion, not a check of
-    the terminal +100 landing bonus.
+Landing rates (both are reported)
+    return ≥ 200
+        Fraction of episodes whose plain-env episodic return is greater than
+        or equal to 200 (Gymnasium's official "solved" threshold). This is
+        a return-based criterion, not a check of the terminal bonus.
+    at-rest bonus (+100)
+        Fraction of episodes that terminated (not truncated) with a final-step
+        reward of exactly +100. LunarLander only gives that bonus when the
+        lander comes to rest — the Trainer's landing definition.
 
-Termination vs truncation
-    LunarLander-v3 cuts an episode off at 1000 steps. `terminated` means
-    the lander crashed, flew out of bounds, or came to rest (landed).
-    `truncated` means the episode hit the 1000-step time limit — the
-    signature of a hovering policy. The two rates are reported separately
-    so a high score that comes from hanging in the air is visible.
+Crash and timeout
+    crash rate: terminated with a final-step reward of -100 (crash or
+    out-of-bounds). timeout rate: truncated at the 1000-step time limit
+    (the signature of a hovering policy).
 
 Usage:
-    .venv/bin/python src/analysis/evaluate.py \\
-        --model plain=models/plain_s*.zip \\
-        --model time_penalty=models/time_penalty_s*.zip \\
-        --n-episodes 20 \\
-        --n-eval-seeds 3 \\
-        --output-dir results
+    .venv/bin/python src/analysis/evaluate.py \
+        --model plain=models/plain_s*.zip \
+        --model time_penalty=models/time_penalty_s*.zip \
+        --n-episodes 20 \
+        --n-eval-seeds 3 \
+        --eval-seed-start 2000 \
+        --output-dir results \
+        --output-stem analysis_eval_trainer
 
 Quote globs so the shell does not expand them. Repeat --model for each label.
-Writes results/eval_results.csv and results/eval_results.md (override the
-destination with --output-dir).
+Writes <output-dir>/<output-stem>.csv and .md (defaults: results/eval_results.*).
 """
 from __future__ import annotations
 
@@ -45,6 +48,8 @@ from pathlib import Path
 ENV_ID = "LunarLander-v3"
 MAX_EPISODE_STEPS = 1000
 LANDING_RETURN_THRESHOLD = 200  # official Gymnasium "solved" threshold
+AT_REST_BONUS = 100
+CRASH_PENALTY = -100
 
 
 def parse_model_spec(spec: str) -> tuple[str, str]:
@@ -90,19 +95,27 @@ def run_episode(model, env, seed: int) -> dict:
     length = 0
     terminated = False
     truncated = False
+    final_reward = 0.0
     done = False
     while not done:
         action, _ = model.predict(obs, deterministic=True)
         obs, reward, terminated, truncated, _info = env.step(action)
-        total += float(reward)
+        final_reward = float(reward)
+        total += final_reward
         length += 1
         done = bool(terminated or truncated)
+    terminated = bool(terminated)
+    truncated = bool(truncated)
     return {
         "return": total,
         "length": length,
-        "terminated": bool(terminated),
-        "truncated": bool(truncated),
+        "terminated": terminated,
+        "truncated": truncated,
+        "final_reward": final_reward,
         "landed": total >= LANDING_RETURN_THRESHOLD,
+        "landed_at_rest": terminated and final_reward == AT_REST_BONUS,
+        "crashed": terminated and final_reward == CRASH_PENALTY,
+        "timed_out": truncated,
     }
 
 
@@ -128,7 +141,7 @@ def evaluate_model(model_path: Path, n_episodes: int, seeds: list[int], device: 
     return rows
 
 
-def aggregate(label: str, model_paths: list[Path], episodes: list[dict]) -> dict:
+def aggregate(label: str, model_paths: list[Path], episodes: list[dict], scope: str) -> dict:
     returns = [e["return"] for e in episodes]
     lengths = [e["length"] for e in episodes]
     n = len(episodes)
@@ -136,20 +149,30 @@ def aggregate(label: str, model_paths: list[Path], episodes: list[dict]) -> dict
     # Sample std (ddof=1) when we have at least two episodes; otherwise 0.
     std_score = statistics.stdev(returns) if n >= 2 else 0.0
     n_landed = sum(1 for e in episodes if e["landed"])
+    n_landed_at_rest = sum(1 for e in episodes if e["landed_at_rest"])
+    n_crashed = sum(1 for e in episodes if e["crashed"])
+    n_timeout = sum(1 for e in episodes if e["timed_out"])
     n_terminated = sum(1 for e in episodes if e["terminated"])
     n_truncated = sum(1 for e in episodes if e["truncated"])
     return {
         "label": label,
+        "scope": scope,
         "n_models": len(model_paths),
         "models": ";".join(str(p) for p in model_paths),
         "n_episodes": n,
         "mean_score": mean_score,
         "std_score": std_score,
         "landing_rate": n_landed / n if n else float("nan"),
+        "landing_rate_at_rest": n_landed_at_rest / n if n else float("nan"),
+        "crash_rate": n_crashed / n if n else float("nan"),
+        "timeout_rate": n_timeout / n if n else float("nan"),
         "terminated_rate": n_terminated / n if n else float("nan"),
         "truncated_rate": n_truncated / n if n else float("nan"),
         "mean_episode_length": statistics.fmean(lengths) if n else float("nan"),
         "n_landed": n_landed,
+        "n_landed_at_rest": n_landed_at_rest,
+        "n_crashed": n_crashed,
+        "n_timeout": n_timeout,
         "n_terminated": n_terminated,
         "n_truncated": n_truncated,
     }
@@ -157,15 +180,22 @@ def aggregate(label: str, model_paths: list[Path], episodes: list[dict]) -> dict
 
 CSV_COLUMNS = [
     "label",
+    "scope",
     "n_models",
     "n_episodes",
     "mean_score",
     "std_score",
     "landing_rate",
+    "landing_rate_at_rest",
+    "crash_rate",
+    "timeout_rate",
     "terminated_rate",
     "truncated_rate",
     "mean_episode_length",
     "n_landed",
+    "n_landed_at_rest",
+    "n_crashed",
+    "n_timeout",
     "n_terminated",
     "n_truncated",
     "models",
@@ -185,7 +215,14 @@ def write_csv(path: Path, rows: list[dict]) -> None:
             out = dict(row)
             for key in ("mean_score", "std_score", "mean_episode_length"):
                 out[key] = f"{out[key]:.4f}"
-            for key in ("landing_rate", "terminated_rate", "truncated_rate"):
+            for key in (
+                "landing_rate",
+                "landing_rate_at_rest",
+                "crash_rate",
+                "timeout_rate",
+                "terminated_rate",
+                "truncated_rate",
+            ):
                 out[key] = f"{out[key]:.4f}"
             writer.writerow({k: out[k] for k in CSV_COLUMNS})
 
@@ -200,37 +237,42 @@ def write_markdown(path: Path, rows: list[dict], n_episodes: int, seeds: list[in
         "",
         f"Each model was run for **{n_episodes} episodes** on each of "
         f"**{len(seeds)} eval seeds** (`{seeds}`). Training seeds that share "
-        "a label are aggregated.",
+        "a label are reported individually and then aggregated.",
         "",
-        "**Landing rate** is the fraction of episodes whose episodic return "
-        f"is ≥ {LANDING_RETURN_THRESHOLD} (Gymnasium's official solved "
-        "threshold). This is not a check of the terminal +100 landing bonus.",
+        "**Landing rate (return ≥ 200)** is the fraction of episodes whose "
+        f"episodic return is ≥ {LANDING_RETURN_THRESHOLD} (Gymnasium's official "
+        "solved threshold).",
         "",
-        "**Terminated rate** is the fraction of episodes that ended with "
-        "`terminated=True` (landed, crashed, or went out of bounds before "
-        f"the {MAX_EPISODE_STEPS}-step time limit).",
+        "**Landing rate (at-rest +100)** is the fraction of episodes that "
+        f"terminated with a final-step reward of +{AT_REST_BONUS} (the lander "
+        "came to rest). This is the Trainer's landing definition.",
         "",
-        f"**Truncated rate** is the fraction of episodes cut off at the "
+        "**Crash rate** is the fraction of episodes that terminated with a "
+        f"final-step reward of {CRASH_PENALTY} (crash or out of bounds).",
+        "",
+        f"**Timeout rate** is the fraction of episodes cut off at the "
         f"{MAX_EPISODE_STEPS}-step time limit (`truncated=True`). A high "
-        "truncated rate is the signature of a hovering policy.",
+        "timeout rate is the signature of a hovering policy.",
         "",
-        "| Label | Models | Episodes | Mean score | Std | Landing rate "
-        "(return ≥ 200) | Terminated | Truncated | Mean length |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Label | Scope | Models | Episodes | Mean score | Std | "
+        "Land (≥200) | Land (+100) | Crash | Timeout | Mean length |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in rows:
         lines.append(
-            "| {label} | {n_models} | {n_episodes} | {mean_score:.2f} | "
-            "{std_score:.2f} | {landing} | {terminated} | {truncated} | "
+            "| {label} | {scope} | {n_models} | {n_episodes} | {mean_score:.2f} | "
+            "{std_score:.2f} | {land200} | {land100} | {crash} | {timeout} | "
             "{mean_len:.1f} |".format(
                 label=row["label"],
+                scope=row["scope"],
                 n_models=row["n_models"],
                 n_episodes=row["n_episodes"],
                 mean_score=row["mean_score"],
                 std_score=row["std_score"],
-                landing=format_rate(row["landing_rate"]),
-                terminated=format_rate(row["terminated_rate"]),
-                truncated=format_rate(row["truncated_rate"]),
+                land200=format_rate(row["landing_rate"]),
+                land100=format_rate(row["landing_rate_at_rest"]),
+                crash=format_rate(row["crash_rate"]),
+                timeout=format_rate(row["timeout_rate"]),
                 mean_len=row["mean_episode_length"],
             )
         )
@@ -238,14 +280,26 @@ def write_markdown(path: Path, rows: list[dict], n_episodes: int, seeds: list[in
         [
             "",
             "Std is the sample standard deviation of all episode returns "
-            "pooled under the label (across training seeds, eval seeds, and "
-            "episodes).",
+            "pooled under the row (across training seeds where aggregated, "
+            "eval seeds, and episodes).",
             "",
             "Generated by `src/analysis/evaluate.py`.",
             "",
         ]
     )
     path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def format_summary_line(row: dict) -> str:
+    return (
+        f"  {row['label']} [{row['scope']}]: mean={row['mean_score']:.2f} "
+        f"std={row['std_score']:.2f} "
+        f"land>=200={row['landing_rate']*100:.1f}% "
+        f"land+100={row['landing_rate_at_rest']*100:.1f}% "
+        f"crash={row['crash_rate']*100:.1f}% "
+        f"timeout={row['timeout_rate']*100:.1f}% "
+        f"len={row['mean_episode_length']:.1f}"
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -259,8 +313,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="append",
         required=True,
         metavar="LABEL=PATH_OR_GLOB",
-        help="Repeatable. Training seeds that share a label are aggregated. "
-        "Example: --model plain=models/plain_s*.zip",
+        help="Repeatable. Each matching zip is evaluated on its own and then "
+        "aggregated under the label. Example: --model plain=models/plain_s*.zip",
     )
     parser.add_argument(
         "--n-episodes",
@@ -284,7 +338,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--output-dir",
         type=Path,
         default=Path("results"),
-        help="Directory for eval_results.csv and eval_results.md (default: results).",
+        help="Directory for the CSV and Markdown reports (default: results).",
+    )
+    parser.add_argument(
+        "--output-stem",
+        default="eval_results",
+        help="Filename stem for the reports (default: eval_results, so "
+        "results/eval_results.csv and results/eval_results.md).",
     )
     parser.add_argument(
         "--device",
@@ -321,28 +381,21 @@ def main(argv=None) -> int:
         episodes: list[dict] = []
         for path in model_paths:
             print(f"[eval]   loading {path}", flush=True)
-            episodes.extend(
-                evaluate_model(path, args.n_episodes, seeds, args.device)
-            )
-        summaries.append(aggregate(label, model_paths, episodes))
+            model_eps = evaluate_model(path, args.n_episodes, seeds, args.device)
+            episodes.extend(model_eps)
+            summaries.append(aggregate(path.stem, [path], model_eps, scope="model"))
+        if len(model_paths) > 1 or model_paths[0].stem != label:
+            summaries.append(aggregate(label, model_paths, episodes, scope="aggregate"))
 
     out_dir = args.output_dir
-    csv_path = out_dir / "eval_results.csv"
-    md_path = out_dir / "eval_results.md"
+    csv_path = out_dir / f"{args.output_stem}.csv"
+    md_path = out_dir / f"{args.output_stem}.md"
     write_csv(csv_path, summaries)
     write_markdown(md_path, summaries, args.n_episodes, seeds)
     print(f"[eval] wrote {csv_path}")
     print(f"[eval] wrote {md_path}")
     for row in summaries:
-        print(
-            f"  {row['label']}: mean={row['mean_score']:.2f} "
-            f"std={row['std_score']:.2f} "
-            f"landing={row['landing_rate']*100:.1f}% "
-            f"term={row['terminated_rate']*100:.1f}% "
-            f"trunc={row['truncated_rate']*100:.1f}% "
-            f"len={row['mean_episode_length']:.1f}",
-            flush=True,
-        )
+        print(format_summary_line(row), flush=True)
     return 0
 
 

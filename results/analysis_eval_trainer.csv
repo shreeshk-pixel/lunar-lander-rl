@@ -1,0 +1,7 @@
+label,scope,n_models,n_episodes,mean_score,std_score,landing_rate,landing_rate_at_rest,crash_rate,timeout_rate,terminated_rate,truncated_rate,mean_episode_length,n_landed,n_landed_at_rest,n_crashed,n_timeout,n_terminated,n_truncated,models
+plain_s0,model,1,60,259.1766,20.0860,1.0000,1.0000,0.0000,0.0000,1.0000,0.0000,341.9500,60,60,0,0,60,0,models/plain_s0.zip
+plain_s1,model,1,60,262.7343,23.6872,0.9833,0.9833,0.0000,0.0167,0.9833,0.0167,317.1000,59,59,0,1,59,1,models/plain_s1.zip
+plain,aggregate,2,120,260.9554,21.9409,0.9917,0.9917,0.0000,0.0083,0.9917,0.0083,329.5250,119,119,0,1,119,1,models/plain_s0.zip;models/plain_s1.zip
+time_penalty_s0,model,1,60,274.0185,20.0352,1.0000,1.0000,0.0000,0.0000,1.0000,0.0000,282.6833,60,60,0,0,60,0,models/time_penalty_s0.zip
+time_penalty_s1,model,1,60,182.4982,104.9419,0.7167,0.7333,0.2000,0.0667,0.9333,0.0667,362.2333,43,44,12,4,56,4,models/time_penalty_s1.zip
+time_penalty,aggregate,2,120,228.2584,88.1518,0.8583,0.8667,0.1000,0.0333,0.9667,0.0333,322.4583,103,104,12,4,116,4,models/time_penalty_s0.zip;models/time_penalty_s1.zip
