@@ -18,8 +18,6 @@
 # if a Box2D build error mentions a missing swig binary:
 #   pip install swig==4.5.1
 #
-# Notebook extras (Colab / local nbconvert only; not required for training):
-#   pip install nbconvert ipykernel
 
 gymnasium[box2d]==1.4.0
 Box2D==2.3.10

@@ -2,10 +2,6 @@
 
 PPO on Gymnasium `LunarLander-v3`, trained to land — until a +1-per-frame "upright and slow" bonus teaches it to hover instead. Potential-based shaping (Ng, Harada & Russell 1999) plus a small per-frame fee restores landing.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/<your-username>/lunar-lander-rl/blob/main/notebooks/colab_train.ipynb)
-
-The Colab badge is a placeholder until the repo is pushed. The notebook is `notebooks/colab_train.ipynb`; the local git branch is `master`, so switch `main` to `master` in that URL if you do not rename the default branch.
-
 | Random agent | Baseline landing | Hack: hover | Fix: landing |
 | :---: | :---: | :---: | :---: |
 | ![Random crash](assets/random_crash.gif) | ![Baseline landing](assets/plain_s0.gif) | ![Hack hover](assets/hack_hover.gif) | ![Fix landing](assets/fix_landing.gif) |
@@ -151,7 +147,7 @@ Independent multi-seed evaluation (the table above) and the combined learning-cu
     --window 100 --solved-threshold 200
 ```
 
-There is also a Colab notebook, `notebooks/colab_train.ipynb`, that calls these same scripts. `TIMESTEPS`, `SEEDS` and `DEVICE` can be overridden with environment variables for a short local run.
+`TIMESTEPS`, `SEEDS` and `DEVICE` can be overridden with environment variables for a short local run.
 
 ## Training times
 
@@ -170,7 +166,6 @@ These are **not a speed comparison**. Training happened in three parallel batche
 
 ```text
 configs/                 YAML records of the published hyperparameters
-notebooks/colab_train.ipynb
 scripts/                 setup.sh, run_baseline.sh, run_time_penalty.sh,
                          run_hack.sh, run_fix.sh, run_all.sh
 src/train.py             PPO training (optional reward wrapper)
