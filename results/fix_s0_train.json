@@ -1,0 +1,26 @@
+{
+  "run": "fix_s0",
+  "env_id": "LunarLander-v3",
+  "wrapper": "fix",
+  "wrapper_kwargs": {},
+  "seed": 0,
+  "timesteps": 1000000,
+  "actual_timesteps": 1007616,
+  "n_envs": 8,
+  "ppo_kwargs": {
+    "n_steps": 1024,
+    "batch_size": 64,
+    "n_epochs": 4,
+    "gamma": 0.999,
+    "gae_lambda": 0.98,
+    "ent_coef": 0.01,
+    "learning_rate": 0.0003
+  },
+  "device": "cpu",
+  "wall_clock_seconds": 166.4,
+  "wall_clock_minutes": 2.77,
+  "model_path": "/home/box/shared/lunar-lander-rl/models/fix_s0.zip",
+  "log_dir": "/home/box/shared/lunar-lander-rl/logs/fix_s0",
+  "curve_png": "/home/box/shared/lunar-lander-rl/assets/fix_s0_curve.png",
+  "finished_at": "2026-11-14 17:12:08 IST"
+}

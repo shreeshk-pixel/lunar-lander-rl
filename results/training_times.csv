@@ -1,0 +1,13 @@
+run,wrapper,seed,timesteps,n_envs,device,wall_clock_seconds,wall_clock_minutes,finished_at
+hack_s0,hack,0,1007616,8,cpu,165.8,2.76,2026-11-14 17:12:08 IST
+hack_s1,hack,1,1007616,8,cpu,163.3,2.72,2026-11-14 17:12:05 IST
+hack_s2,hack,2,1007616,8,cpu,165.9,2.76,2026-11-14 17:12:08 IST
+fix_s0,fix,0,1007616,8,cpu,166.4,2.77,2026-11-14 17:12:08 IST
+fix_s1,fix,1,1007616,8,cpu,166.1,2.77,2026-11-14 17:12:08 IST
+fix_s2,fix,2,1007616,8,cpu,166.6,2.78,2026-11-14 17:12:09 IST
+plain_s0,plain,0,1007616,8,cpu,178.6,2.98,2026-11-14 17:07:26 IST
+plain_s1,plain,1,1007616,8,cpu,183.2,3.05,2026-11-14 17:07:31 IST
+time_penalty_s0,time_penalty,0,1007616,8,cpu,185.3,3.09,2026-11-14 17:07:33 IST
+time_penalty_s1,time_penalty,1,1007616,8,cpu,182.2,3.04,2026-11-14 17:07:30 IST
+plain_s2,plain,2,1007616,8,cpu,171.7,2.86,2026-11-14 17:20:01 IST
+time_penalty_s2,time_penalty,2,1007616,8,cpu,173.2,2.89,2026-11-14 17:20:03 IST

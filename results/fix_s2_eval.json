@@ -1,0 +1,324 @@
+{
+  "model": "models/fix_s2.zip",
+  "env_id": "LunarLander-v3",
+  "wrapper": "none (plain env)",
+  "episodes": 30,
+  "deterministic": true,
+  "eval_seeds": [
+    1000,
+    1029
+  ],
+  "mean_return": 262.43,
+  "std_return": 18.3,
+  "min_return": 225.31,
+  "max_return": 297.26,
+  "landing_rate": 1.0,
+  "on_pad_rate": 1.0,
+  "solved_rate": 1.0,
+  "crash_rate": 0.0,
+  "truncated_rate": 0.0,
+  "mean_length": 346.4,
+  "landing_definition": "terminated with final reward +100 (lander at rest; not crash, not timeout)",
+  "per_episode": [
+    {
+      "seed": 1000,
+      "ret": 278.302,
+      "length": 366,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1001,
+      "ret": 259.152,
+      "length": 322,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1002,
+      "ret": 257.684,
+      "length": 385,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1003,
+      "ret": 259.76,
+      "length": 362,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1004,
+      "ret": 282.209,
+      "length": 343,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1005,
+      "ret": 238.268,
+      "length": 348,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1006,
+      "ret": 274.214,
+      "length": 340,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1007,
+      "ret": 256.335,
+      "length": 359,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1008,
+      "ret": 246.665,
+      "length": 354,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1009,
+      "ret": 258.375,
+      "length": 326,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1010,
+      "ret": 297.259,
+      "length": 355,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1011,
+      "ret": 225.314,
+      "length": 345,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1012,
+      "ret": 241.818,
+      "length": 345,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1013,
+      "ret": 291.048,
+      "length": 349,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1014,
+      "ret": 233.789,
+      "length": 331,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1015,
+      "ret": 283.202,
+      "length": 348,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1016,
+      "ret": 244.147,
+      "length": 339,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1017,
+      "ret": 259.334,
+      "length": 342,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1018,
+      "ret": 272.911,
+      "length": 327,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1019,
+      "ret": 262.982,
+      "length": 318,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1020,
+      "ret": 287.702,
+      "length": 352,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1021,
+      "ret": 251.317,
+      "length": 372,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1022,
+      "ret": 271.074,
+      "length": 367,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1023,
+      "ret": 244.551,
+      "length": 351,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1024,
+      "ret": 287.05,
+      "length": 350,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1025,
+      "ret": 256.754,
+      "length": 368,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1026,
+      "ret": 288.5,
+      "length": 312,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1027,
+      "ret": 245.27,
+      "length": 358,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1028,
+      "ret": 259.936,
+      "length": 329,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    },
+    {
+      "seed": 1029,
+      "ret": 257.849,
+      "length": 328,
+      "terminated": true,
+      "truncated": false,
+      "landed": true,
+      "crashed": false,
+      "on_pad": true
+    }
+  ]
+}

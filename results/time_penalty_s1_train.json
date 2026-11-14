@@ -1,0 +1,27 @@
+{
+  "run": "time_penalty_s1",
+  "env_id": "LunarLander-v3",
+  "wrapper": "time_penalty",
+  "wrapper_kwargs": {
+    "penalty": 0.05
+  },
+  "seed": 1,
+  "timesteps": 1000000,
+  "actual_timesteps": 1007616,
+  "n_envs": 8,
+  "ppo_kwargs": {
+    "n_steps": 1024,
+    "batch_size": 64,
+    "n_epochs": 4,
+    "gamma": 0.999,
+    "gae_lambda": 0.98,
+    "ent_coef": 0.01,
+    "learning_rate": 0.0003
+  },
+  "wall_clock_seconds": 182.2,
+  "wall_clock_minutes": 3.04,
+  "model_path": "/home/box/shared/lunar-lander-rl/models/time_penalty_s1.zip",
+  "log_dir": "/home/box/shared/lunar-lander-rl/logs/time_penalty_s1",
+  "curve_png": "/home/box/shared/lunar-lander-rl/assets/time_penalty_s1_curve.png",
+  "finished_at": "2026-11-14 17:07:30 IST"
+}

@@ -1,0 +1,316 @@
+{
+  "model": "models/hack_s2.zip",
+  "episodes": 30,
+  "mean_return": -190.665,
+  "std_return": 37.9,
+  "mean_length": 1000.0,
+  "landing_rate": 0.0,
+  "crash_rate": 0.0,
+  "timeout_rate": 1.0,
+  "hover_frame_frac": 0.956,
+  "upright_slow_frame_frac": 0.956,
+  "hover_frames_total": 28689,
+  "frames_total": 30000,
+  "per_episode": [
+    {
+      "seed": 1000,
+      "ret": -194.61,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.966,
+      "upright_slow_frac": 0.966
+    },
+    {
+      "seed": 1001,
+      "ret": -172.04,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.91,
+      "upright_slow_frac": 0.91
+    },
+    {
+      "seed": 1002,
+      "ret": -220.24,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.99,
+      "upright_slow_frac": 0.99
+    },
+    {
+      "seed": 1003,
+      "ret": -222.77,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.993,
+      "upright_slow_frac": 0.993
+    },
+    {
+      "seed": 1004,
+      "ret": -134.52,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.949,
+      "upright_slow_frac": 0.949
+    },
+    {
+      "seed": 1005,
+      "ret": -233.1,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 1.0,
+      "upright_slow_frac": 1.0
+    },
+    {
+      "seed": 1006,
+      "ret": -127.96,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.927,
+      "upright_slow_frac": 0.927
+    },
+    {
+      "seed": 1007,
+      "ret": -217.68,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.934,
+      "upright_slow_frac": 0.934
+    },
+    {
+      "seed": 1008,
+      "ret": -224.67,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.998,
+      "upright_slow_frac": 0.998
+    },
+    {
+      "seed": 1009,
+      "ret": -206.54,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.917,
+      "upright_slow_frac": 0.917
+    },
+    {
+      "seed": 1010,
+      "ret": -192.09,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.944,
+      "upright_slow_frac": 0.944
+    },
+    {
+      "seed": 1011,
+      "ret": -239.4,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 1.0,
+      "upright_slow_frac": 1.0
+    },
+    {
+      "seed": 1012,
+      "ret": -216.02,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 1.0,
+      "upright_slow_frac": 1.0
+    },
+    {
+      "seed": 1013,
+      "ret": -179.39,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.923,
+      "upright_slow_frac": 0.923
+    },
+    {
+      "seed": 1014,
+      "ret": -203.99,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 1.0,
+      "upright_slow_frac": 1.0
+    },
+    {
+      "seed": 1015,
+      "ret": -197.46,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.928,
+      "upright_slow_frac": 0.928
+    },
+    {
+      "seed": 1016,
+      "ret": -235.31,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.949,
+      "upright_slow_frac": 0.949
+    },
+    {
+      "seed": 1017,
+      "ret": -196.37,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.918,
+      "upright_slow_frac": 0.918
+    },
+    {
+      "seed": 1018,
+      "ret": -152.46,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.939,
+      "upright_slow_frac": 0.939
+    },
+    {
+      "seed": 1019,
+      "ret": -136.88,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.971,
+      "upright_slow_frac": 0.971
+    },
+    {
+      "seed": 1020,
+      "ret": -165.63,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.934,
+      "upright_slow_frac": 0.934
+    },
+    {
+      "seed": 1021,
+      "ret": -224.28,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.994,
+      "upright_slow_frac": 0.994
+    },
+    {
+      "seed": 1022,
+      "ret": -204.41,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.94,
+      "upright_slow_frac": 0.94
+    },
+    {
+      "seed": 1023,
+      "ret": -168.61,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.981,
+      "upright_slow_frac": 0.981
+    },
+    {
+      "seed": 1024,
+      "ret": -164.15,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.912,
+      "upright_slow_frac": 0.912
+    },
+    {
+      "seed": 1025,
+      "ret": -228.76,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.993,
+      "upright_slow_frac": 0.993
+    },
+    {
+      "seed": 1026,
+      "ret": -86.39,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.874,
+      "upright_slow_frac": 0.874
+    },
+    {
+      "seed": 1027,
+      "ret": -245.62,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.997,
+      "upright_slow_frac": 0.997
+    },
+    {
+      "seed": 1028,
+      "ret": -154.62,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.956,
+      "upright_slow_frac": 0.956
+    },
+    {
+      "seed": 1029,
+      "ret": -173.99,
+      "length": 1000,
+      "landed": false,
+      "crashed": false,
+      "timeout": true,
+      "hover_frac": 0.952,
+      "upright_slow_frac": 0.952
+    }
+  ]
+}

@@ -18,10 +18,12 @@ Each model was run for **20 episodes** on each of **3 eval seeds** (`[2000, 2001
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | plain_s0 | model | 1 | 60 | 259.18 | 20.09 | 100.0% | 100.0% | 0.0% | 0.0% | 341.9 |
 | plain_s1 | model | 1 | 60 | 262.73 | 23.69 | 98.3% | 98.3% | 0.0% | 1.7% | 317.1 |
-| plain | aggregate | 2 | 120 | 260.96 | 21.94 | 99.2% | 99.2% | 0.0% | 0.8% | 329.5 |
+| plain_s2 | model | 1 | 60 | 253.03 | 19.77 | 100.0% | 100.0% | 0.0% | 0.0% | 363.5 |
+| plain | aggregate | 3 | 180 | 258.32 | 21.51 | 99.4% | 99.4% | 0.0% | 0.6% | 340.9 |
 | time_penalty_s0 | model | 1 | 60 | 274.02 | 20.04 | 100.0% | 100.0% | 0.0% | 0.0% | 282.7 |
 | time_penalty_s1 | model | 1 | 60 | 182.50 | 104.94 | 71.7% | 73.3% | 20.0% | 6.7% | 362.2 |
-| time_penalty | aggregate | 2 | 120 | 228.26 | 88.15 | 85.8% | 86.7% | 10.0% | 3.3% | 322.5 |
+| time_penalty_s2 | model | 1 | 60 | 271.40 | 19.66 | 100.0% | 100.0% | 0.0% | 0.0% | 282.2 |
+| time_penalty | aggregate | 3 | 180 | 242.64 | 75.56 | 90.6% | 91.1% | 6.7% | 2.2% | 309.0 |
 | hack_s0 | model | 1 | 60 | 43.26 | 33.86 | 0.0% | 6.7% | 0.0% | 93.3% | 994.8 |
 | hack_s1 | model | 1 | 60 | 86.17 | 77.53 | 1.7% | 58.3% | 3.3% | 38.3% | 956.9 |
 | hack_s2 | model | 1 | 60 | -177.37 | 50.55 | 0.0% | 0.0% | 0.0% | 100.0% | 1000.0 |
@@ -53,10 +55,12 @@ A discrepancy is flagged when `|Δ mean|` exceeds ~1× the agent's reported std,
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | plain_s0 | 257.2 ± 27.5 | 259.18 ± 20.09 | +1.98 | 0.967 | 1.000 | +0.033 | 365.7 | 341.9 | none |
 | plain_s1 | 259.4 ± 41.4 | 262.73 ± 23.69 | +3.33 | 0.967 | 0.983 | +0.016 | 303.6 | 317.1 | none |
+| plain_s2 | 254.0 ± 19.0 | 253.03 ± 19.77 | −0.97 | 1.000 | 1.000 | 0.000 | 367.9 | 363.5 | none |
 | time_penalty_s0 | 275.2 ± 19.2 | 274.02 ± 20.04 | −1.18 | 1.000 | 1.000 | 0.000 | 286.1 | 282.7 | none |
 | time_penalty_s1 | 169.9 ± 101.7 | 182.50 ± 104.94 | +12.60 | 0.600 | 0.733 | +0.133 | 444.1 | 362.2 | landing rate |
+| time_penalty_s2 | 272.9 ± 19.8 | 271.40 ± 19.66 | −1.50 | 1.000 | 1.000 | 0.000 | 290.0 | 282.2 | none |
 
-`plain_s0`, `plain_s1` and `time_penalty_s0` agree with the Trainer: mean differences are well under one reported standard deviation, and landing-rate differences are under 0.1.
+`plain_s0`, `plain_s1`, `plain_s2`, `time_penalty_s0` and `time_penalty_s2` agree with the Trainer: mean differences are well under one reported standard deviation, and landing-rate differences are under 0.1.
 
 **`time_penalty_s1` is flagged on landing rate.** The at-rest landing rate here is 0.733 vs the Trainer's 0.600 (Δ = 0.133 > 0.1). The mean return (182.50 vs 169.9) is still well inside the Trainer's ±101.7 std, so the mean is not flagged. Crash rate matches at 0.200; timeout is 0.067 here vs 0.200 in the Trainer's eval, and mean length is 362.2 vs 444.1. That is consistent with a policy that had not converged by 1M steps (as the Trainer noted), plus different eval seeds.
 
@@ -75,12 +79,12 @@ A discrepancy is flagged when `|Δ mean|` exceeds ~1× the agent's reported std,
 
 No Reward Hacker claim is flagged. The hover is real on the plain env: `hack_s0` and `hack_s2` almost always time out at ~1000 steps with low or negative return, and `hack_s1` is mixed (landing 0.583, timeout 0.383, crash 0.033). The potential-based `fix` recovers landing: all three fix seeds match the Hacker within threshold and land on 96.7–100% of episodes, with means in the mid-260s.
 
-### Aggregates (this eval only)
+### Aggregates (this eval only; 3 training seeds per variant, 180 episodes each)
 
 | Label | Models | Episodes | Mean ± std | Land ≥200 | Land +100 | Crash | Timeout | Mean length |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| plain | 2 | 120 | 260.96 ± 21.94 | 99.2% | 99.2% | 0.0% | 0.8% | 329.5 |
-| time_penalty | 2 | 120 | 228.26 ± 88.15 | 85.8% | 86.7% | 10.0% | 3.3% | 322.5 |
+| plain | 3 | 180 | 258.32 ± 21.51 | 99.4% | 99.4% | 0.0% | 0.6% | 340.9 |
+| time_penalty | 3 | 180 | 242.64 ± 75.56 | 90.6% | 91.1% | 6.7% | 2.2% | 309.0 |
 | hack | 3 | 180 | −15.98 ± 128.86 | 0.6% | 21.7% | 1.1% | 77.2% | 983.9 |
 | fix | 3 | 180 | 262.99 ± 27.24 | 98.3% | 98.3% | 0.0% | 1.7% | 311.4 |
 
